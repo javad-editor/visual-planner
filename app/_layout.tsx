@@ -4,10 +4,12 @@ import "../global.css";
 
 export default function RootLayout() {
   return (
-    // This wrapper enables native swiping across the entire app
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
+        {/* Mounts the entire tab bar interface. We hide the header so the tabs handle their own. */}
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        
+        {/* Modals and full-screen overlays sit on top of the tabs */}
         <Stack.Screen 
           name="add-task" 
           options={{ 

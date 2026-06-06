@@ -6,6 +6,7 @@ export interface Task {
   timeString: string;
   durationMinutes: number; // Changed from string to number
   theme: "blue" | "emerald" | "amber" | "rose";
+  iconName: string;
 }
 
 interface TaskState {
@@ -23,6 +24,7 @@ export const useTaskStore = create<TaskState>((set) => ({
       durationMinutes: 45, // Math-friendly
       title: "Daily Standup",
       theme: "blue",
+      iconName: "Users",
     },
     {
       id: "2",
@@ -30,6 +32,7 @@ export const useTaskStore = create<TaskState>((set) => ({
       durationMinutes: 120, 
       title: "Deep Work: React Native Architecture",
       theme: "emerald",
+      iconName: "Code"
     },
     {
       id: "3",
@@ -37,6 +40,7 @@ export const useTaskStore = create<TaskState>((set) => ({
       durationMinutes: 30,
       title: "Lunch Break",
       theme: "amber",
+      iconName: "Coffee"
     },
   ],
   

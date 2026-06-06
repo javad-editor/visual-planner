@@ -11,6 +11,7 @@ export interface TimelineNodeProps {
   timeString: string;
   duration: string;
   theme?: "blue" | "emerald" | "amber" | "rose";
+  iconName?: string;
   isFirst?: boolean;
   isLast?: boolean;
   isActive?: boolean;
@@ -31,6 +32,7 @@ export function TimelineNode({
   timeString, 
   duration, 
   theme = "blue", 
+  iconName,
   isFirst = false, 
   isLast = false,
   isActive = false,
@@ -39,10 +41,19 @@ export function TimelineNode({
   onDelete
 }: TimelineNodeProps) {
   
-  const themeColorClass = themeColors[theme];
+  // A strict switch statement guarantees NativeWind extracts the classes
+  const getThemeClass = (colorTheme: string) => {
+    switch (colorTheme) {
+      case "emerald": return "bg-emerald-500";
+      case "amber": return "bg-amber-500";
+      case "rose": return "bg-rose-500";
+      case "blue": 
+      default: return "bg-blue-500";
+    }
+  };
 
-  // Dynamically assign the action to the logical "trailing" edge.
-  // In RTL, the trailing edge is visually on the left. In LTR, it's on the right.
+  const themeColorClass = getThemeClass(theme);
+
   const renderTrailingAction = (progress: SharedValue<number>, dragX: SharedValue<number>) => (
     <SwipeAction dragX={dragX} onDelete={onDelete} />
   );
@@ -63,7 +74,6 @@ export function TimelineNode({
         themeColorClass={themeColorClass} 
       />
 
-      {/* Using pe-4 instead of pr-4 to respect RTL reading direction */}
       <View className="flex-1 pb-4 pt-1 pe-4">
         <ReanimatedSwipeable 
           renderRightActions={I18nManager.isRTL ? undefined : renderTrailingAction}
@@ -77,6 +87,7 @@ export function TimelineNode({
             themeColorClass={themeColorClass}
             isActive={isActive}
             isCompleted={isCompleted}
+            iconName={iconName}
             onPress={onPress}
           />
         </ReanimatedSwipeable>

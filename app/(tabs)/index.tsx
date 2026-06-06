@@ -1,12 +1,11 @@
 import { Href, router } from "expo-router";
 import { I18nManager, ScrollView, View } from "react-native";
-// 1. NEW: Import the Reanimated layout components
 import Animated, { FadeOut, LinearTransition } from "react-native-reanimated";
-import { TimelineNode } from "../src/components/features/Timeline/TimelineNode";
-import { AppButton } from "../src/components/ui/AppButton";
-import { AppText } from "../src/components/ui/AppText";
-import { useTaskStore } from "../src/store/useTaskStore";
-import { formatDuration, getTaskStatus } from "../src/utils/timeEngine";
+import { TimelineNode } from "../../src/components/features/Timeline/TimelineNode";
+import { AppButton } from "../../src/components/ui/AppButton";
+import { AppText } from "../../src/components/ui/AppText";
+import { useTaskStore } from "../../src/store/useTaskStore";
+import { formatDuration, getTaskStatus } from "../../src/utils/timeEngine";
 
 I18nManager.allowRTL(true);
 I18nManager.forceRTL(true);
@@ -41,9 +40,6 @@ export default function Home() {
           const status = getTaskStatus(task.timeString, task.durationMinutes);
           
           return (
-            /* 2. NEW: Wrap the node in an Animated.View */
-            /* layout={LinearTransition} handles the smooth gliding of remaining items */
-            /* exiting={FadeOut} handles the elegant disappearance of the deleted item */
             <Animated.View 
               key={task.id}
               layout={LinearTransition.springify().damping(14).mass(0.8)}
@@ -54,6 +50,7 @@ export default function Home() {
                 duration={formatDuration(task.durationMinutes)} 
                 title={task.title} 
                 theme={task.theme} 
+                iconName={task.iconName} // <-- Data passes through here
                 isFirst={index === 0} 
                 isLast={index === tasks.length - 1}
                 isCompleted={status === "completed"}
