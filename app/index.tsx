@@ -1,28 +1,26 @@
 import { Href, router } from "expo-router";
 import { I18nManager, ScrollView, View } from "react-native";
-import { TimelineNode } from "../src/components/features/TimelineNode";
+// 1. NEW: Import the Reanimated layout components
+import Animated, { FadeOut, LinearTransition } from "react-native-reanimated";
+import { TimelineNode } from "../src/components/features/Timeline/TimelineNode";
 import { AppButton } from "../src/components/ui/AppButton";
 import { AppText } from "../src/components/ui/AppText";
 import { useTaskStore } from "../src/store/useTaskStore";
 import { formatDuration, getTaskStatus } from "../src/utils/timeEngine";
 
-// Architecturally forcing RTL at the root level to ensure all 
-// logical properties (start/end) map correctly for Arabic/Persian testing.
 I18nManager.allowRTL(true);
 I18nManager.forceRTL(true);
 
 export default function Home() {
-  // Extracting only the array to prevent unnecessary re-renders
   const tasks = useTaskStore((state) => state.tasks);
+  const deleteTask = useTaskStore((state) => state.deleteTask);
 
-  // Trigger the native stack modal
   const handleOpenModal = () => {
     router.push("/add-task" as Href);
   };
 
   return (
     <View className="flex-1 bg-slate-50">
-      {/* Top Navigation Header */}
       <View className="px-6 pt-16 pb-6 bg-white border-b border-slate-200 shadow-sm flex-row justify-between items-center">
         <View>
           <AppText className="text-3xl font-black text-slate-900">Today</AppText>
@@ -31,7 +29,6 @@ export default function Home() {
           </AppText>
         </View>
         
-        {/* Action Button */}
         <AppButton 
           title="+ Add Task" 
           onPress={handleOpenModal} 
@@ -39,27 +36,32 @@ export default function Home() {
         />
       </View>
 
-      {/* The Dynamic Timeline */}
       <ScrollView className="flex-1 pt-6">
         {tasks.map((task, index) => {
-          // The Brain: Evaluating real-time status dynamically against the system clock
           const status = getTaskStatus(task.timeString, task.durationMinutes);
           
           return (
-            <TimelineNode 
+            /* 2. NEW: Wrap the node in an Animated.View */
+            /* layout={LinearTransition} handles the smooth gliding of remaining items */
+            /* exiting={FadeOut} handles the elegant disappearance of the deleted item */
+            <Animated.View 
               key={task.id}
-              timeString={task.timeString} 
-              // Convert the integer back to a localized, readable string format
-              duration={formatDuration(task.durationMinutes)} 
-              title={task.title} 
-              theme={task.theme} 
-              isFirst={index === 0} 
-              isLast={index === tasks.length - 1}
-              // The Muscle: Applying the computed visual state
-              isCompleted={status === "completed"}
-              isActive={status === "active"}
-              onPress={() => console.log(`Opening details for task ID: ${task.id}`)}
-            />
+              layout={LinearTransition.springify().damping(14).mass(0.8)}
+              exiting={FadeOut.duration(200)}
+            >
+              <TimelineNode 
+                timeString={task.timeString} 
+                duration={formatDuration(task.durationMinutes)} 
+                title={task.title} 
+                theme={task.theme} 
+                isFirst={index === 0} 
+                isLast={index === tasks.length - 1}
+                isCompleted={status === "completed"}
+                isActive={status === "active"}
+                onPress={() => console.log(`Opening details for task ID: ${task.id}`)}
+                onDelete={() => deleteTask(task.id)}
+              />
+            </Animated.View>
           );
         })}
       </ScrollView>

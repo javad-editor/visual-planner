@@ -11,6 +11,7 @@ export interface Task {
 interface TaskState {
   tasks: Task[];
   addTask: (task: Omit<Task, "id">) => void;
+  deleteTask: (id: string) => void;
   clearTasks: () => void;
 }
 
@@ -45,6 +46,11 @@ export const useTaskStore = create<TaskState>((set) => ({
         ...state.tasks, 
         { ...newTask, id: Math.random().toString(36).substring(7) }
       ].sort((a, b) => a.timeString.localeCompare(b.timeString))
+    })),
+
+    deleteTask: (id) => 
+    set((state) => ({
+      tasks: state.tasks.filter((task) => task.id !== id)
     })),
 
   clearTasks: () => set({ tasks: [] }),
